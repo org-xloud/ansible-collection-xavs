@@ -16,6 +16,10 @@ podman_runtime_directory:
 podman_registry:
 podman_registry_insecure: false
 
+# Container image namespace configuration
+docker_namespace: "xavs.images"
+container_image_namespace: "{{ docker_namespace }}"
+
 # Podman registry mirror
 podman_registry_mirror:
 

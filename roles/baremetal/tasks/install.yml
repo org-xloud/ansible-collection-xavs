@@ -32,7 +32,7 @@
   when: disable_firewall | bool
 
 - import_role:
-    name: openstack.kolla.packages
+    name: xavs.images.packages
 
 - import_role:
-    name: openstack.kolla.{{ container_engine }}
+    name: xavs.images.{{ container_engine }}

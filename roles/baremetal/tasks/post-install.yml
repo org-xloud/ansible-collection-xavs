@@ -1,10 +1,10 @@
 ---
 - import_role:
-    name: openstack.kolla.kolla_user
+    name: xavs.images.kolla_user
   when: create_kolla_user | bool
 
 - import_role:
-    name: openstack.kolla.{{ container_engine }}_sdk
+    name: xavs.images.{{ container_engine }}_sdk
 
 - name: Ensure node_config_directory directory exists
   file:
@@ -16,7 +16,7 @@
   become: True
 
 - import_role:
-    name: openstack.kolla.apparmor_libvirt
+    name: xavs.images.apparmor_libvirt
 
 - name: Change state of selinux
   selinux:

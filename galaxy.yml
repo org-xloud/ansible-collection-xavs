@@ -1,6 +1,6 @@
 ---
-namespace: openstack
-name: kolla
+namespace: xavs
+name: images
 version: 1.0.0
 readme: README.md
 authors:

@@ -9,7 +9,7 @@
     - sudo
     - "{{ kolla_group }}"
 
-- name: Create kolla user
+- name: Create xavs user
   user:
     name: "{{ kolla_user }}"
     state: present
@@ -20,15 +20,15 @@
     append: true
   become: True
 
-- name: Add public key to kolla user authorized keys
+- name: Add public key to xavs user authorized keys
   authorized_key:
     user: "{{ kolla_user }}"
     key: "{{ kolla_ssh_key.public_key }}"
   become: True
 
-- name: Grant kolla user passwordless sudo
+- name: Grant xavs user passwordless sudo
   lineinfile:
-    dest: /etc/sudoers.d/kolla-ansible-users
+    dest: /etc/sudoers.d/xavs-ansible-users
     state: present
     create: yes
     mode: '0640'

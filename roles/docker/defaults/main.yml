@@ -51,6 +51,10 @@ docker_ulimit_nofile_soft: 1048576
 docker_registry:
 docker_registry_insecure: false
 
+# Container image namespace configuration
+docker_namespace: "xavs.images"
+container_image_namespace: "{{ docker_namespace }}"
+
 # Path to a CA file for Docker registry
 docker_registry_ca:
 
