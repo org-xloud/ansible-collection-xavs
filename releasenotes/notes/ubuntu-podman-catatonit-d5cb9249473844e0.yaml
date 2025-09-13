@@ -1,6 +1,0 @@
----
-fixes:
-  - |
-    Fixes execution of some non-Kolla containers on Ubuntu with Podman as
-    container engine, by installing the ``catatonit`` package.
-    `LP#2114998 <https://launchpad.net/bugs/2114998>`__

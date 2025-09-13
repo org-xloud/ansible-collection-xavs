@@ -18,10 +18,13 @@
     # https://bugzilla.redhat.com/show_bug.cgi?id=1734081
     module_hotfixes: true
   become: True
+  when: not (offline_mode | default(false))
 
 - name: Install docker rpm gpg key
   rpm_key:
     state: present
     key: "{{ docker_yum_gpgkey }}"
   become: True
-  when: docker_yum_gpgcheck | bool
+  when: 
+    - docker_yum_gpgcheck | bool
+    - not (offline_mode | default(false))

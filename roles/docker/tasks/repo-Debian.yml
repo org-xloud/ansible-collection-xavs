@@ -5,9 +5,10 @@
       - ca-certificates
       - gnupg
     cache_valid_time: "{{ apt_cache_valid_time }}"
-    update_cache: true
+    update_cache: "{{ not (offline_mode | default(false)) }}"
     state: present
   become: True
+  when: not (offline_mode | default(false))
 
 - name: Ensure apt sources list directory exists
   file:
@@ -30,6 +31,7 @@
     mode: "0644"
     force: true
   become: True
+  when: not (offline_mode | default(false))
 
 - name: Install docker apt pin
   copy:
@@ -63,8 +65,10 @@
         Signed-by: /etc/apt/keyrings/docker.asc
     mode: "0644"
   become: True
+  when: not (offline_mode | default(false))
 
 - name: Update the apt cache
   apt:
     update_cache: true
   become: True
+  when: not (offline_mode | default(false))

@@ -20,6 +20,7 @@
             dest: "/etc/apt/keyrings/ceph.gpg"
             mode: "0644"
             force: true
+          when: not (offline_mode | default(false))
 
         - name: Ensure old ceph repository absent
           file:
@@ -40,12 +41,13 @@
                 Components: main
                 Signed-by: /etc/apt/keyrings/ceph.gpg
             mode: "0644"
+          when: not (offline_mode | default(false))
 
         - name: Install apt packages
           apt:
             name: "{{ ceph_apt_package }}"
             state: present
-            update_cache: true
+            update_cache: "{{ not (offline_mode | default(false)) }}"
 
       when: ansible_facts.os_family == 'Debian'
       become: True
@@ -58,11 +60,13 @@
             baseurl: "{{ ceph_yum_baseurl }}"
             gpgcheck: "{{ ceph_yum_gpgcheck | bool }}"
             gpgkey: "{{ ceph_yum_gpgkey }}"
+          when: not (offline_mode | default(false))
 
         - name: Enable epel yum repository
           package:
             name: "{{ epel_yum_package }}"
             state: present
+          when: not (offline_mode | default(false))
 
         - name: Install ceph rpm gpg key
           rpm_key:
@@ -70,12 +74,14 @@
             key: "{{ ceph_yum_gpgkey }}"
           when:
             - ceph_yum_gpgcheck | bool
+            - not (offline_mode | default(false))
 
         - name: Install RPM packages
           package:
             name: "{{ ceph_yum_package }}"
             state: present
             enablerepo: epel
+          when: not (offline_mode | default(false))
 
       when: ansible_facts.os_family == 'RedHat'
       become: True
