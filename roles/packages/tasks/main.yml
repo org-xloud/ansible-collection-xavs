@@ -1,23 +1,49 @@
 ---
-- name: Install packages
+# Install packages
+- name: Install packages on Debian/Ubuntu (apt)
   vars:
-    pkg_installs: >-
-      {{ ubuntu_pkg_install if ansible_facts.os_family == 'Debian'
-         else openeuler_pkg_install if ansible_facts.distribution == 'openEuler'
-         else redhat_pkg_install }}
-  package:
-    name: "{{ pkg_installs | select | list }}"
-    cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
+    pkg_installs: "{{ ubuntu_pkg_install | select | list }}"
+  apt:
+    name: "{{ pkg_installs }}"
     state: present
+    update_cache: "{{ (not offline_mode) | bool }}"
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+  when: ansible_facts.os_family == 'Debian'
   become: true
 
-- name: Remove packages
+- name: Install packages on RedHat family (dnf)
   vars:
-    pkg_removals: >-
-      {{ ubuntu_pkg_removals if ansible_facts.os_family == 'Debian'
-         else redhat_pkg_removals }}
-  package:
-    name: "{{ pkg_removals | select | list }}"
+    pkg_installs: >-
+      {{ redhat_pkg_install if ansible_facts.distribution != 'openEuler' else openeuler_pkg_install }}
+  dnf:
+    name: "{{ pkg_installs | select | list }}"
+    state: present
+    update_cache: "{{ (not offline_mode) | bool }}"
+    disable_excludes: all
+  when: ansible_facts.os_family == 'RedHat'
+  become: true
+
+# Remove packages
+- name: Remove packages on Debian/Ubuntu (apt)
+  vars:
+    pkg_removals: "{{ ubuntu_pkg_removals | select | list }}"
+  apt:
+    name: "{{ pkg_removals }}"
     state: absent
+    update_cache: false
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+  when: ansible_facts.os_family == 'Debian'
+  become: true
+
+- name: Remove packages on RedHat family (dnf)
+  vars:
+    pkg_removals: "{{ redhat_pkg_removals | select | list }}"
+  dnf:
+    name: "{{ pkg_removals }}"
+    state: absent
+    update_cache: false
+    allowerasing: true
+    refresh: false
+    download_only: false
+  when: ansible_facts.os_family == 'RedHat'
   become: true
