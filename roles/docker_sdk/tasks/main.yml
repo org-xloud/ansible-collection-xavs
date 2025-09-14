@@ -42,7 +42,10 @@
   become_user: "{{ docker_sdk_virtualenv_owner }}"
   check_mode: false
   changed_when: packaging_installed.rc != 0
-  when: virtualenv is not none and packaging_installed.rc != 0
+  when: 
+    - virtualenv is not none 
+    - packaging_installed.rc != 0
+    - not (offline_mode | default(false))
 
 - name: Install latest pip in the virtualenv
   pip:
@@ -53,7 +56,9 @@
     virtualenv_command: "python{{ host_python_version }} -m venv"
   become: true
   become_user: "{{ docker_sdk_virtualenv_owner }}"
-  when: virtualenv is not none
+  when: 
+    - virtualenv is not none
+    - not (offline_mode | default(false))
 
 - name: Install docker SDK for python using pip
   pip:
@@ -65,4 +70,6 @@
     virtualenv_command: "{{ virtualenv is none | ternary(omit, 'python' ~ host_python_version ~ ' -m venv') }}"
   become: true
   become_user: "{{ virtualenv is none | ternary(omit, docker_sdk_virtualenv_owner) }}"
-  when: not (docker_sdk_python_externally_managed | default(false) and virtualenv is none)
+  when: 
+    - not (docker_sdk_python_externally_managed | default(false) and virtualenv is none)
+    - not (offline_mode | default(false))

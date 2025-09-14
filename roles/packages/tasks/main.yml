@@ -32,7 +32,9 @@
     state: absent
     update_cache: false
     cache_valid_time: "{{ apt_cache_valid_time }}"
-  when: ansible_facts.os_family == 'Debian'
+  when: 
+    - ansible_facts.os_family == 'Debian'
+    - not (offline_mode | default(false))
   become: true
 
 - name: Remove packages on RedHat family (dnf)
@@ -45,5 +47,7 @@
     allowerasing: true
     refresh: false
     download_only: false
-  when: ansible_facts.os_family == 'RedHat'
+  when: 
+    - ansible_facts.os_family == 'RedHat'
+    - not (offline_mode | default(false))
   become: true
