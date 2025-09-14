@@ -1,4 +1,7 @@
 ---
+# When true, avoid any network access in package tasks
+offline_mode: false
+
 ceph_version: "quincy"
 epel_version: "9"
 ceph_url: "https://download.ceph.com"

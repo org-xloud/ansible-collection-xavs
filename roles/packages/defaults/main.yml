@@ -2,6 +2,9 @@
 # Apt cache TTL in seconds.
 apt_cache_valid_time: 3600
 
+# When true, avoid any network access in package tasks
+offline_mode: false
+
 enable_multipathd: false
 
 # Whether the nova_libvirt container is enabled.

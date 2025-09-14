@@ -1,4 +1,7 @@
 ---
+# When true, avoid any network access in package tasks
+offline_mode: false
+
 # List of RPM/APT packages to install.
 docker_sdk_packages_default:
   - "python3-setuptools"

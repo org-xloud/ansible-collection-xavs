@@ -3,7 +3,7 @@
 apt_cache_valid_time: 3600
 
 # When true, avoid any network access in package tasks
-offline_mode: true
+offline_mode: false
 
 # Whether to enable a package repository for Docker.
 enable_docker_repo: "{% if ansible_facts.distribution == 'openEuler' %}false{% else %}true{% endif %}"
