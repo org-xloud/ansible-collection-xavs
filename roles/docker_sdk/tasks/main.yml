@@ -22,9 +22,10 @@
   package:
     name: "{{ docker_sdk_packages | select | list }}"
     cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ (not (offline_mode | default(false))) if ansible_facts.os_family == 'Debian' else omit }}"
+    update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
     state: present
   become: true
+  when: not (offline_mode | default(false))
 
 # NOTE(kevko) Packaging needs to be installed before ansible's pip module is used
 - name: Check if packaging is already installed

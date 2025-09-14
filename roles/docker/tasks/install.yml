@@ -37,6 +37,7 @@
     state: present
   become: True
   register: docker_install_result
+  when: not (offline_mode | default(false))
 
 # If any packages were updated, and any containers were running, wait for the
 # daemon to come up and start all previously running containers.
@@ -67,6 +68,7 @@
       become: true
       changed_when: true
   when:
+    - not (offline_mode | default(false))
     - docker_install_result is changed
     - running_containers.rc == 0
     - running_containers.stdout != ''

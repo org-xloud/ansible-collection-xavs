@@ -2,9 +2,6 @@
 # Apt cache TTL in seconds.
 apt_cache_valid_time: 3600
 
-# Whether to enable a package repository for Docker.PT cache TTL in seconds.
-apt_cache_valid_time: 3600
-
 # When true, avoid any network access in package tasks
 offline_mode: true
 
