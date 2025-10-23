@@ -1,6 +1,6 @@
 ---
 - import_role:
-    name: xavs.images.xavs-user
+    name: xavs.images.xavs_user
   when: create_kolla_user | bool
 
 - import_role:
