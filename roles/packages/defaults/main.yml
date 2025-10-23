@@ -2,9 +2,6 @@
 # Apt cache TTL in seconds.
 apt_cache_valid_time: 3600
 
-# When true, avoid any network access in package tasks
-offline_mode: false
-
 enable_multipathd: false
 
 # Whether the nova_libvirt container is enabled.
@@ -15,10 +12,6 @@ ubuntu_pkg_install:
  - iputils-ping
  - "{% if enable_multipathd | bool %}sg3-utils-udev{% endif %}"
  - tzdata
-
-openeuler_pkg_install:
- - python3-docker
- - python3-dbus
 
 redhat_pkg_install:
  - git

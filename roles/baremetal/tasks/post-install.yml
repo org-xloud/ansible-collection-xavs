@@ -1,10 +1,10 @@
 ---
 - import_role:
-    name: xavs.images.kolla_user
+    name: openstack.kolla.kolla_user
   when: create_kolla_user | bool
 
 - import_role:
-    name: xavs.images.{{ container_engine }}_sdk
+    name: openstack.kolla.{{ container_engine }}_sdk
 
 - name: Ensure node_config_directory directory exists
   file:
@@ -12,11 +12,11 @@
     state: directory
     owner: "{{ kolla_user if create_kolla_user | bool else omit }}"
     group: "{{ kolla_group if create_kolla_user | bool else omit }}"
-    mode: 0755
-  become: True
+    mode: "0755"
+  become: true
 
 - import_role:
-    name: xavs.images.apparmor_libvirt
+    name: openstack.kolla.apparmor_libvirt
 
 - name: Change state of selinux
   selinux:

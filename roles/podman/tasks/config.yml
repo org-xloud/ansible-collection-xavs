@@ -1,0 +1,77 @@
+---
+- name: Ensure podman config directory exists
+  file:
+    path: /etc/containers/{{ item }}
+    state: directory
+    mode: "0755"
+  become: true
+  with_items:
+    - "containers.conf.d"
+    - "registries.conf.d"
+    - "storage.conf.d"
+
+- name: Write registries config
+  become: true
+  vars:
+    registry: |
+      [[registry]]
+      location = "{{ podman_registry }}"
+      insecure = {{ podman_registry_insecure | bool | lower }}
+  copy:
+    content: "{{ registry }}"
+    dest: /etc/containers/registries.conf.d/registries.conf
+    mode: "0644"
+  when: podman_registry is not none
+
+- name: Write registry mirror config
+  become: true
+  vars:
+    registry_mirror: |
+      [[registry.mirror]]
+      prefix = docker.io
+      location = "{{ podman_registry_mirror }}"
+  copy:
+    content: "{{ registry_mirror }}"
+    dest: /etc/containers/registries.conf.d/registry-mirror.conf
+    mode: "0644"
+  when: podman_registry_mirror is not none
+
+- name: Write storage config
+  become: true
+  vars:
+    config: |
+      {% if podman_storage_driver is not none %}
+      driver = {{ podman_storage_driver }}
+      {% endif %}
+      {% if podman_runtime_directory is not none %}
+      runroot = {{ podman_runtime_directory }}
+      {% endif %}
+  copy:
+    content: "{{ config }}"
+    dest: /etc/containers/storage.conf.d/storage.conf
+    mode: "0644"
+  when: podman_storage_driver is not none or podman_runtime_directory is not none
+
+- name: Ensure the path for CA file for podman registry exists
+  file:
+    path: "/etc/containers/certs.d/{{ podman_registry }}"
+    owner: root
+    group: root
+    mode: "0700"
+    state: directory
+  become: true
+  when:
+    - podman_registry is not none
+    - podman_registry_ca is not none
+
+- name: Ensure the CA file for private registry exists
+  copy:
+    src: "{{ private_registry_ca }}"
+    dest: "/etc/containers/certs.d/{{ private_registry }}/ca.crt"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  when:
+    - podman_registry is not none
+    - podman_registry_ca is not none

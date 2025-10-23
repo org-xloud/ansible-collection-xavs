@@ -1,4 +1,7 @@
 ---
+- include_tasks: "repo-{{ ansible_facts.os_family }}.yml"
+  when: enable_docker_repo | bool
+
 # Upgrading docker engine may cause containers to stop. Take a snapshot of the
 # running containers prior to a potential upgrade of Docker.
 
@@ -33,11 +36,10 @@
   package:
     name: "{{ docker_packages | select | list }}"
     cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ not (offline_mode | default(false)) if ansible_facts.os_family == 'Debian' else omit }}"
+    update_cache: true
     state: present
-  become: True
+  become: true
   register: docker_install_result
-  when: not (offline_mode | default(false))
 
 # If any packages were updated, and any containers were running, wait for the
 # daemon to come up and start all previously running containers.
@@ -49,9 +51,9 @@
       systemd:
         name: docker
         state: started
-        enabled: yes
-        masked: no
-      become: True
+        enabled: true
+        masked: false
+      become: true
 
     - name: Wait for Docker to start
       command: docker info
@@ -68,7 +70,13 @@
       become: true
       changed_when: true
   when:
-    - not (offline_mode | default(false))
     - docker_install_result is changed
     - running_containers.rc == 0
     - running_containers.stdout != ''
+
+- import_tasks: config.yml
+
+- include_tasks: configure-containerd-for-zun.yml
+  when:
+    - containerd_configure_for_zun|bool
+    - "'zun-cni-daemon' in group_names"

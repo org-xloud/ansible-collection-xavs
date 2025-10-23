@@ -1,7 +1,4 @@
 ---
-# When true, avoid any network access in package tasks
-offline_mode: false
-
 # List of RPM/APT packages to install.
 docker_sdk_packages_default:
   - "python3-setuptools"
@@ -31,20 +28,19 @@ docker_sdk_packages_dbus_deps_debian:
 docker_sdk_packages: >-
   {{ docker_sdk_packages_default +
       (lookup('vars', 'docker_sdk_packages_dbus_deps_' ~ ansible_facts.os_family | lower)
-       if virtualenv is not none else []) }}
+       if not (docker_sdk_python_externally_managed | default(false) and virtualenv is none) else []) }}
 
 # List of Python packages to install via Pip.
 # NOTE(mnasiadka) docker 3.0.0 is in kolla-ansible requirements
-docker_sdk_pip_packages:
-  - "docker>=6.0.0,<7.0.0"
-  - "requests<2.32"
+docker_sdk_core_pip_packages:
+  - "docker>=7.0.0"
+
+docker_sdk_additional_pip_packages:
+  - "requests"
   - "dbus-python"
 
 # APT cache TTL in seconds.
 apt_cache_valid_time: 3600
-
-# Version of python used to execute Ansible modules.
-host_python_version: "{{ ansible_facts.python.version.major }}.{{ ansible_facts.python.version.minor }}"
 
 # Path to a virtualenv in which to install python packages. If None, a
 # virtualenv will not be used.
@@ -53,9 +49,9 @@ virtualenv:
 # Whether the virtualenv will inherit packages from the global site-packages
 # directory. This is typically required for modules such as yum and apt which
 # are not available on PyPI.
-virtualenv_site_packages: True
+virtualenv_site_packages: true
 
-create_kolla_user: False
+create_kolla_user: false
 kolla_user: "kolla"
 
 # Owner of the virtualenv.
@@ -63,3 +59,9 @@ docker_sdk_virtualenv_owner: "{{ kolla_user if create_kolla_user | bool else omi
 
 # A pip constraints file to use when installing the Docker SDK.
 docker_sdk_upper_constraints_file:
+
+docker_sdk_osbpo_apt_url: "http://osbpo.debian.net/debian"
+docker_sdk_osbpo_apt_repo: "deb [signed-by=/etc/apt/keyrings/osbpo.asc] {{ docker_sdk_osbpo_apt_url }} bookworm-bobcat-backports-nochange main"
+
+# Action taken on the packages
+package_action: "install"

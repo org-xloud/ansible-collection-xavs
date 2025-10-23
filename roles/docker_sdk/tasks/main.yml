@@ -2,7 +2,8 @@
 - name: Handling for Python3.10+ externally managed environments
   block:
     - name: Get Python
-      ansible.builtin.command: "{{ ansible_facts.python.executable }} -c 'import sysconfig; print(sysconfig.get_path(\"stdlib\", sysconfig.get_default_scheme()))'"
+      ansible.builtin.command:
+        cmd: "{{ ansible_facts.python.executable }} -c 'import sysconfig; print(sysconfig.get_path(\"stdlib\", sysconfig.get_default_scheme()))'"
       changed_when: false
       register: python_default_scheme_path
 
@@ -18,59 +19,4 @@
 
   when: ansible_facts.python.version.major == 3 and ansible_facts.python.version.minor >= 10
 
-- name: Install packages
-  package:
-    name: "{{ docker_sdk_packages | select | list }}"
-    cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
-    state: present
-  become: true
-  when: not (offline_mode | default(false))
-
-# NOTE(kevko) Packaging needs to be installed before ansible's pip module is used
-- name: Check if packaging is already installed
-  command: "{{ virtualenv }}/bin/pip show packaging"
-  become: true
-  become_user: "{{ docker_sdk_virtualenv_owner }}"
-  register: packaging_installed
-  failed_when: false
-  changed_when: false
-  check_mode: false
-  when: virtualenv is not none
-- name: Install packaging into virtualenv
-  command: "{{ virtualenv }}/bin/python -m pip install packaging"
-  become: true
-  become_user: "{{ docker_sdk_virtualenv_owner }}"
-  check_mode: false
-  changed_when: packaging_installed.rc != 0
-  when: 
-    - virtualenv is not none 
-    - packaging_installed.rc != 0
-    - not (offline_mode | default(false))
-
-- name: Install latest pip in the virtualenv
-  pip:
-    # NOTE(hrw) pip 19.3 is first version complaining about being run with Python 2
-    name: pip>19.3
-    virtualenv: "{{ virtualenv }}"
-    virtualenv_site_packages: "{{ virtualenv_site_packages }}"
-    virtualenv_command: "python{{ host_python_version }} -m venv"
-  become: true
-  become_user: "{{ docker_sdk_virtualenv_owner }}"
-  when: 
-    - virtualenv is not none
-    - not (offline_mode | default(false))
-
-- name: Install docker SDK for python using pip
-  pip:
-    name: "{{ docker_sdk_pip_packages }}"
-    executable: "{{ virtualenv is none | ternary('pip3', omit) }}"
-    extra_args: "{% if docker_sdk_upper_constraints_file %}-c {{ docker_sdk_upper_constraints_file }}{% endif %}"
-    virtualenv: "{{ virtualenv is none | ternary(omit, virtualenv) }}"
-    virtualenv_site_packages: "{{ virtualenv is none | ternary(omit, virtualenv_site_packages) }}"
-    virtualenv_command: "{{ virtualenv is none | ternary(omit, 'python' ~ host_python_version ~ ' -m venv') }}"
-  become: true
-  become_user: "{{ virtualenv is none | ternary(omit, docker_sdk_virtualenv_owner) }}"
-  when: 
-    - not (docker_sdk_python_externally_managed | default(false) and virtualenv is none)
-    - not (offline_mode | default(false))
+- include_tasks: "{{ package_action }}.yml"

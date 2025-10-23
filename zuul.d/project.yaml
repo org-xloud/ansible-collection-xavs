@@ -8,21 +8,30 @@
     check:
       jobs:
         - kolla-ansible-debian
+        - kolla-ansible-debian-podman
         - kolla-ansible-rocky9
+        - kolla-ansible-rocky9-podman
         - kolla-ansible-ubuntu
-        - kayobe-overcloud-ubuntu-jammy
-        - kayobe-overcloud-rocky9
-        - kayobe-overcloud-host-configure-ubuntu-jammy
+        - kolla-ansible-ubuntu-podman
+        - kayobe-overcloud-rocky9:
+            voting: false
         - kayobe-overcloud-host-configure-rocky9
+        - kayobe-overcloud-host-configure-ubuntu-noble
+        - kayobe-overcloud-ubuntu-noble
+        - kayobe-overcloud-ubuntu-noble-podman
     check-arm64:
       jobs:
         - kolla-ansible-debian-aarch64
+        - kolla-ansible-debian-aarch64-podman
     gate:
       jobs:
         - kolla-ansible-debian
+        - kolla-ansible-debian-podman
         - kolla-ansible-rocky9
+        - kolla-ansible-rocky9-podman
         - kolla-ansible-ubuntu
-        - kayobe-overcloud-ubuntu-jammy
-        - kayobe-overcloud-rocky9
-        - kayobe-overcloud-host-configure-ubuntu-jammy
+        - kolla-ansible-ubuntu-podman
         - kayobe-overcloud-host-configure-rocky9
+        - kayobe-overcloud-host-configure-ubuntu-noble
+        - kayobe-overcloud-ubuntu-noble
+        - kayobe-overcloud-ubuntu-noble-podman

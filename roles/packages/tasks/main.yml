@@ -3,7 +3,6 @@
   vars:
     pkg_installs: >-
       {{ ubuntu_pkg_install if ansible_facts.os_family == 'Debian'
-         else openeuler_pkg_install if ansible_facts.distribution == 'openEuler'
          else redhat_pkg_install }}
   package:
     name: "{{ pkg_installs | select | list }}"
@@ -11,7 +10,6 @@
     update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
     state: present
   become: true
-  when: not (offline_mode | default(false))
 
 - name: Remove packages
   vars:
@@ -22,4 +20,3 @@
     name: "{{ pkg_removals | select | list }}"
     state: absent
   become: true
-  when: not (offline_mode | default(false))

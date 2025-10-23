@@ -1,6 +1,6 @@
 ---
 - import_role:
-    name: xavs.images.etc_hosts
+    name: openstack.kolla.etc_hosts
 
 - import_tasks: pre-install.yml
 
