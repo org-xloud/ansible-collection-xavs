@@ -41,7 +41,7 @@
 
     - name: Update the apt cache
       apt:
-        update_cache: true
+        update_cache: "{{ not (offline_mode | default(false)) }}"
   when:
     - ansible_facts.distribution == 'Debian'
     - podman_sdk_python_externally_managed | default(false)

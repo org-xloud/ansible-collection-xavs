@@ -32,6 +32,11 @@ disable_firewall: true
 git_http_proxy: ""
 git_https_proxy: ""
 
-node_config_directory: "/etc/kolla"
+node_config_directory: "/etc/xavs"
 
 container_engine: "{{ kolla_container_engine | default('docker') }}"
+
+
+# Container image namespace configuration
+docker_namespace: "xavs.images"
+container_image_namespace: "{{ docker_namespace }}"

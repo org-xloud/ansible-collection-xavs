@@ -1,22 +1,26 @@
 ---
-- name: Install packages
+# Remove packages
+- name: Remove packages on Debian/Ubuntu (apt)
   vars:
-    pkg_installs: >-
-      {{ ubuntu_pkg_install if ansible_facts.os_family == 'Debian'
-         else redhat_pkg_install }}
-  package:
-    name: "{{ pkg_installs | select | list }}"
-    cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
-    state: present
+    pkg_removals: "{{ ubuntu_pkg_removals | select | list }}"
+  apt:
+    name: "{{ pkg_removals }}"
+    state: absent
+    update_cache: false
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+  when: 
+    - ansible_facts.os_family == 'Debian'
+    - not (offline_mode | default(false))
   become: true
 
-- name: Remove packages
+# Install packages
+- name: Install packages on Debian/Ubuntu (apt)
   vars:
-    pkg_removals: >-
-      {{ ubuntu_pkg_removals if ansible_facts.os_family == 'Debian'
-         else redhat_pkg_removals }}
-  package:
-    name: "{{ pkg_removals | select | list }}"
-    state: absent
+    pkg_installs: "{{ ubuntu_pkg_install | select | list }}"
+  apt:
+    name: "{{ pkg_installs }}"
+    state: present
+    update_cache: "{{ (not offline_mode) | bool }}"
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+  when: ansible_facts.os_family == 'Debian'
   become: true

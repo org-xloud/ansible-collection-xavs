@@ -36,7 +36,7 @@
   package:
     name: "{{ docker_sdk_packages | select | list }}"
     cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ True if ansible_facts.os_family == 'Debian' else omit }}"
+    update_cache: "{{ (not (offline_mode | default(false))) if ansible_facts.os_family == 'Debian' else omit }}"
     state: present
   become: true
 
@@ -74,6 +74,9 @@
     - virtualenv_stat.stat.isdir is defined
     - virtualenv_stat.stat.isdir
     - packaging_installed.rc != 0
+    - not (offline_mode | default(false))
+
+
 
 - name: Install latest pip and packaging in the virtualenv
   pip:
@@ -86,7 +89,9 @@
     virtualenv_command: "{{ ansible_facts.python.executable }} -m venv"
   become: true
   become_user: "{{ docker_sdk_virtualenv_owner }}"
-  when: virtualenv is not none
+  when: 
+    - virtualenv is not none
+    - not (offline_mode | default(false))
 
 - name: Install docker SDK for python using pip
   pip:
@@ -98,4 +103,6 @@
     virtualenv_command: "{{ virtualenv is none | ternary(omit, ansible_facts.python.executable ~ ' -m venv') }}"
   become: true
   become_user: "{{ virtualenv is none | ternary(omit, docker_sdk_virtualenv_owner) }}"
-  when: not (docker_sdk_python_externally_managed | default(false) and virtualenv is none)
+  when: 
+    - not (docker_sdk_python_externally_managed | default(false) and virtualenv is none)
+    - not (offline_mode | default(false))

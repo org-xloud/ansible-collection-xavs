@@ -1,6 +1,6 @@
-# Ansible Collection - openstack.kolla
+# Ansible Collection - xavs.images
 
-The Ansible openstack.kolla collection provides Ansible plugins, modules and
+The Ansible xavs.images collection provides Ansible plugins, modules and
 roles for OpenStack Kolla projects, including Kolla Ansible and Kayobe.
 
 Kolla projects deploy OpenStack services and infrastructure components in

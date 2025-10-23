@@ -1,6 +1,6 @@
 ---
 prelude: >
-    New ``openstack.kolla.podman`` and ``openstack.kolla.podman_sdk``
+    New ``xavs.images.podman`` and ``xavs.images.podman_sdk``
     roles were added. Using these Kolla now supports both docker and
     podman container engines.
 features:

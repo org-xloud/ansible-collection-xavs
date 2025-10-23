@@ -13,7 +13,7 @@
   package:
     name: "{{ podman_packages | select | list }}"
     cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: true
+    update_cache: "{{ not (offline_mode | default(false)) }}"
     state: present
   become: true
   register: podman_install_result
