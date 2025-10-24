@@ -32,7 +32,9 @@
         state: link
       become: true
       when: not docker_unit_file.stat.exists
-  when: ansible_facts.os_family == 'Debian'
+  when:
+    - ansible_facts.os_family == 'Debian'
+    - not (offline_mode | default(false))
 
 - name: Install packages
   package:
@@ -83,6 +85,9 @@
     name: docker
     state: started
     enabled: true
+    masked: false
+  become: true
+  when: offline_mode | default(false)
   become: true
   when: offline_mode | default(false)
 
