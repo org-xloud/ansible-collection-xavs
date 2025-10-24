@@ -88,8 +88,6 @@
     masked: false
   become: true
   when: offline_mode | default(false)
-  become: true
-  when: offline_mode | default(false)
 
 - import_tasks: config.yml
 
