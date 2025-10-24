@@ -54,7 +54,7 @@
     - name: Disable cloud-init manage_etc_hosts
       copy:
         content: "manage_etc_hosts: false"
-        dest: /etc/cloud/cloud.cfg.d/99-kolla.cfg
+        dest: /etc/cloud/cloud.cfg.d/99-xavs.cfg
         mode: "0660"
       when: cloud_init.stat.exists
   become: true
