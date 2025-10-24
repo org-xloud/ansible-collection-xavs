@@ -20,7 +20,9 @@
   apt:
     name: "{{ pkg_installs }}"
     state: present
-    update_cache: "{{ (not offline_mode) | bool }}"
+    update_cache: "{{ (not offline_mode | default(false)) | bool }}"
     cache_valid_time: "{{ apt_cache_valid_time }}"
-  when: ansible_facts.os_family == 'Debian'
+  when: 
+    - ansible_facts.os_family == 'Debian'
+    - not (offline_mode | default(false))
   become: true
