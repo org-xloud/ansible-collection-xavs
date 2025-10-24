@@ -1,6 +1,8 @@
 ---
 - include_tasks: "repo-{{ ansible_facts.os_family }}.yml"
-  when: enable_docker_repo | bool
+  when:
+    - enable_docker_repo | bool
+    - not (offline_mode | default(false))
 
 # Upgrading docker engine may cause containers to stop. Take a snapshot of the
 # running containers prior to a potential upgrade of Docker.

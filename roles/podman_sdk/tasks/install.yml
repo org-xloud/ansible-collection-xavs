@@ -46,15 +46,17 @@
     - ansible_facts.distribution == 'Debian'
     - podman_sdk_python_externally_managed | default(false)
     - virtualenv is none
+    - not (offline_mode | default(false))
   become: true
 
 - name: Install packages
   package:
     name: "{{ podman_sdk_packages | select | list }}"
     cache_valid_time: "{{ apt_cache_valid_time if ansible_facts.os_family == 'Debian' else omit }}"
-    update_cache: "{{ true if ansible_facts.os_family == 'Debian' else omit }}"
+    update_cache: "{{ not (offline_mode | default(false)) if ansible_facts.os_family == 'Debian' else omit }}"
     state: present
   become: true
+  when: not (offline_mode | default(false))
 
 - name: Check if virtualenv is a directory
   stat:

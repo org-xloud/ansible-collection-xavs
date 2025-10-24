@@ -16,6 +16,7 @@
     update_cache: "{{ not (offline_mode | default(false)) }}"
     state: present
   become: true
+  when: not (offline_mode | default(false))
   register: podman_install_result
 
 # If any packages were updated, and any containers were running, wait for the
