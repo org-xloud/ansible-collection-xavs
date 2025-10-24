@@ -41,6 +41,7 @@
     update_cache: "{{ not (offline_mode | default(false)) }}"
     state: present
   become: true
+  when: not (offline_mode | default(false))
   register: docker_install_result
 
 # If any packages were updated, and any containers were running, wait for the
@@ -75,6 +76,15 @@
     - docker_install_result is changed
     - running_containers.rc == 0
     - running_containers.stdout != ''
+
+# Ensure docker is started and enabled even in offline mode (when packages were pre-installed)
+- name: Ensure docker is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+  when: offline_mode | default(false)
 
 - import_tasks: config.yml
 
