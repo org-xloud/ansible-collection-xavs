@@ -123,70 +123,12 @@ tox -e ansible-lint     # Ansible-specific linting
 
 ## Task Recipes
 
-### Add a New Role
+Use `/add-collection-role` or `/build-and-install` skills for full step-by-step guides. Quick reference:
 
-1. **Create role directory** — `roles/<role_name>/`:
-   ```
-   roles/<role_name>/
-   ├── defaults/main.yml     # Variables with defaults
-   ├── tasks/
-   │   ├── main.yml          # Entry point
-   │   ├── install.yml       # Package installation
-   │   ├── config.yml        # Configuration
-   │   └── uninstall.yml     # Removal tasks
-   ├── handlers/main.yml     # Restart/reload handlers
-   └── templates/            # Jinja2 templates
-   ```
-2. **Add to baremetal orchestrator** — Edit `roles/baremetal/tasks/install.yml`:
-   ```yaml
-   - import_role:
-       name: xavs.images.<role_name>
-     when: <condition>
-   ```
-3. **Handle offline mode** — Wrap network-dependent tasks:
-   ```yaml
-   - name: Install packages
-     apt: name={{ item }}
-     loop: "{{ packages }}"
-     when: not offline_mode | bool
-   ```
-4. **Update galaxy.yml** if role adds new dependencies
-5. **Test**: Build and install collection, run against test host
-
-### Add a Docker Configuration Option
-
-1. **Add variable** to `roles/docker/defaults/main.yml`:
-   ```yaml
-   docker_my_option: false
-   ```
-2. **Add to daemon.json assembly** in `roles/docker/tasks/config.yml`:
-   ```yaml
-   - name: Merge my option into Docker config
-     set_fact:
-       docker_config: "{{ docker_config | combine({'my-option': docker_my_option}) }}"
-     when: docker_my_option | bool
-   ```
-3. The merge follows the composition order documented above (step 1–11)
-4. Place new option at appropriate priority (before `docker_custom_config` which is always last)
-
-### Build and Publish the Collection
-
-1. **Update version** in `galaxy.yml`: `version: X.Y.Z`
-2. **Build**: `ansible-galaxy collection build --force` → produces `xavs-images-X.Y.Z.tar.gz`
-3. **Test locally**: `ansible-galaxy collection install xavs-images-X.Y.Z.tar.gz --force`
-4. **Lint**: `tox -e linters && tox -e ansible-sanity`
-5. **Install in xavs-ansible**: Update `requirements-core.yml` with new version or path
-
-### Add Platform Support
-
-1. **Add OS detection** — Use `ansible_facts.os_family` and `ansible_facts.distribution`:
-   ```yaml
-   - name: Install for new platform
-     include_tasks: "install-{{ ansible_facts.os_family | lower }}.yml"
-   ```
-2. **Create platform-specific task file** — `tasks/install-<family>.yml`
-3. **Add to CI** — Update `zuul.d/` job definitions for new platform
-4. **Update galaxy.yml** `platforms` list
+- **Add role**: Create role dir → wire into `roles/baremetal/tasks/install.yml` → handle offline mode → update `galaxy.yml`
+- **Add Docker config option**: Add var to `roles/docker/defaults/main.yml` → add to daemon.json assembly (before `docker_custom_config`)
+- **Build collection**: Update version in `galaxy.yml` → `ansible-galaxy collection build --force` → install → lint
+- **Add platform support**: OS detection via `ansible_facts` → platform-specific task file → CI job → `galaxy.yml` platforms
 
 ## Critical Gotchas
 
