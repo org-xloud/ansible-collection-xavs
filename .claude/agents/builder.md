@@ -2,7 +2,7 @@
 name: builder
 description: Implement features, fix bugs, and write code following established repo patterns. Reads CLAUDE.md for conventions before writing.
 tools: Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Builder Agent

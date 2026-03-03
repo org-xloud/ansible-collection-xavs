@@ -2,7 +2,7 @@
 name: deployer
 description: Handle build and deployment workflows. Reads CLAUDE.md and deploy-and-test-workflow skill for repo-specific steps.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Deployer Agent

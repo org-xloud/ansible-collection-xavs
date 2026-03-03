@@ -2,7 +2,7 @@
 name: researcher
 description: Explore codebase, read docs, and gather context before implementation. Returns a structured research report without modifying any files.
 tools: Read, Grep, Glob, WebFetch, WebSearch
-model: haiku
+model: opus
 ---
 
 # Researcher Agent

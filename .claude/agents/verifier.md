@@ -2,7 +2,7 @@
 name: verifier
 description: Post-change verification — run linters, syntax checks, type checks, and validate that changes follow project conventions.
 tools: Read, Grep, Glob, Bash
-model: haiku
+model: opus
 ---
 
 # Verifier Agent

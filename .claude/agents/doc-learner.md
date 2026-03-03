@@ -2,7 +2,7 @@
 name: doc-learner
 description: Review recent work and extract learnings into project documentation. Use after completing features, debugging sessions, or when asked to document what was learned.
 tools: Read, Write, Edit, Grep, Glob
-model: haiku
+model: opus
 ---
 
 # Documentation Learner Agent

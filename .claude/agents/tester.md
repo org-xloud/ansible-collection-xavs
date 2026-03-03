@@ -2,7 +2,7 @@
 name: tester
 description: Run tests, analyze failures, and fix test-related issues. Knows each repo's test framework and commands from CLAUDE.md.
 tools: Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Tester Agent
